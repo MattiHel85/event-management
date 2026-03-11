@@ -80,6 +80,12 @@
       "namedRegex": "^/api/events(?:/)?$"
     },
     {
+      "page": "/api/feature-requests",
+      "regex": "^/api/feature\\-requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/feature\\-requests(?:/)?$"
+    },
+    {
       "page": "/budget",
       "regex": "^/budget(?:/)?$",
       "routeKeys": {},
@@ -96,6 +102,12 @@
       "regex": "^/events/new(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/events/new(?:/)?$"
+    },
+    {
+      "page": "/feature-request",
+      "regex": "^/feature\\-request(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/feature\\-request(?:/)?$"
     }
   ],
   "dataRoutes": [],

@@ -34,6 +34,7 @@ const links = [
 function Sidebar() {
     _s();
     const pathname = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"])();
+    const isFeatureRequest = pathname === "/feature-request";
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("aside", {
         className: "fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-slate-900 flex flex-col z-10",
         children: [
@@ -44,12 +45,12 @@ function Sidebar() {
                     children: "Event Management"
                 }, void 0, false, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 17,
+                    lineNumber: 19,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 16,
+                lineNumber: 18,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -63,33 +64,60 @@ function Sidebar() {
                                 children: icon
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 32,
+                                lineNumber: 34,
                                 columnNumber: 13
                             }, this),
                             label
                         ]
                     }, href, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 23,
+                        lineNumber: 25,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 21,
+                lineNumber: 23,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "px-6 py-4 border-t border-slate-800 text-xs text-slate-600",
-                children: "v0.1.0"
-            }, void 0, false, {
+                className: "mt-auto px-4 py-4 border-t border-slate-800 bg-slate-900/90 backdrop-blur-sm",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                        href: "/feature-request",
+                        className: `w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 shadow-sm ${isFeatureRequest ? "bg-amber-400 text-slate-900 shadow-amber-500/40" : "bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 text-slate-900 hover:brightness-105 hover:shadow-amber-400/40"}`,
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                children: "💡"
+                            }, void 0, false, {
+                                fileName: "[project]/components/Sidebar.tsx",
+                                lineNumber: 49,
+                                columnNumber: 11
+                            }, this),
+                            "Feature Request"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/Sidebar.tsx",
+                        lineNumber: 41,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "px-2 pt-3 text-xs text-slate-600",
+                        children: "v0.1.0"
+                    }, void 0, false, {
+                        fileName: "[project]/components/Sidebar.tsx",
+                        lineNumber: 53,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 37,
+                lineNumber: 40,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Sidebar.tsx",
-        lineNumber: 15,
+        lineNumber: 17,
         columnNumber: 5
     }, this);
 }
@@ -121,7 +149,8 @@ var _s = __turbopack_context__.k.signature();
 const pageTitles = {
     "/events": "Events",
     "/events/new": "Create Event",
-    "/budget": "Budget"
+    "/budget": "Budget",
+    "/feature-request": "Feature Request"
 };
 function getTitle(pathname) {
     if (pageTitles[pathname]) return pageTitles[pathname];
@@ -139,12 +168,12 @@ function Header() {
             children: title
         }, void 0, false, {
             fileName: "[project]/components/Header.tsx",
-            lineNumber: 23,
+            lineNumber: 24,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/Header.tsx",
-        lineNumber: 22,
+        lineNumber: 23,
         columnNumber: 5
     }, this);
 }

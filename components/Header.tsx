@@ -6,6 +6,7 @@ const pageTitles: Record<string, string> = {
   "/events": "Events",
   "/events/new": "Create Event",
   "/budget": "Budget",
+  "/feature-request": "Feature Request",
 };
 
 function getTitle(pathname: string) {
