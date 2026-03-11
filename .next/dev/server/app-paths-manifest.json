@@ -1,10 +1,1 @@
-{
-  "/(app)/budget/page": "app/(app)/budget/page.js",
-  "/(app)/events/[id]/budget/page": "app/(app)/events/[id]/budget/page.js",
-  "/(app)/events/[id]/page": "app/(app)/events/[id]/page.js",
-  "/(app)/events/new/page": "app/(app)/events/new/page.js",
-  "/(app)/events/page": "app/(app)/events/page.js",
-  "/(app)/feature-request/page": "app/(app)/feature-request/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js"
-}
+{}
