@@ -1,0 +1,13 @@
+{
+  "/(app)/budget/page": "/budget",
+  "/(app)/events/[id]/budget/page": "/events/[id]/budget",
+  "/(app)/events/[id]/page": "/events/[id]",
+  "/(app)/events/new/page": "/events/new",
+  "/(app)/events/page": "/events",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/events/[id]/budget/route": "/api/events/[id]/budget",
+  "/api/events/[id]/route": "/api/events/[id]",
+  "/api/events/route": "/api/events",
+  "/page": "/"
+}
