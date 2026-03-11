@@ -11,15 +11,14 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 - KPI cards (total budget, spent, remaining)
 - Budget line items by category
 - Spend breakdown chart
-- Multi-currency support with flags:
+- Multi-currency support:
 - USD (US Dollar)
 - CAD (Canadian Dollar)
 - AUD (Australian Dollar)
 - GBP (British Pound)
 - EUR (Euro)
-- SEK, NOK, DKK, ISK (Nordic crowns)
-- Dashboard-style app layout with sidebar + header
-- Landing page at root route with direct navigation into the app
+- SEK, NOK, DKK, ISK
+- Dashboard-style app layout
 
 ## Tech Stack
 
@@ -27,7 +26,7 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 - TypeScript
 - Tailwind CSS
 - Recharts
-- Mongoose (model + connection scaffolding in place)
+- Mongoose 
 
 ## Current Data Mode
 
@@ -39,16 +38,14 @@ MongoDB integration points are already scaffolded and marked with TODO comments,
 
 ### 1. Install dependencies
 
-On Windows PowerShell (restricted policy), use:
-
 ```bash
-npm.cmd install
+npm install
 ```
 
 ### 2. Run development server
 
 ```bash
-npm.cmd run dev
+npm run dev
 ```
 
 Open http://localhost:3000
@@ -56,7 +53,7 @@ Open http://localhost:3000
 ### 3. Build for production
 
 ```bash
-npm.cmd run build
+npm run build
 ```
 
 ## Project Routes
