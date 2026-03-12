@@ -17,6 +17,7 @@ export interface IEvent {
   budget?: number;
   currency?: string;
   budgetItems?: IBudgetItem[];
+  budgetId?: string; // Reference to detailed Budget document
   createdAt?: string;
 }
 
@@ -40,6 +41,7 @@ const EventSchema = new Schema<IEvent>(
     budget: { type: Number, min: 0 },
     currency: { type: String, default: "USD" },
     budgetItems: { type: [BudgetItemSchema], default: [] },
+    budgetId: { type: String, index: true }, // Reference to Budget document for detailed tracking
   },
   { timestamps: true }
 );
