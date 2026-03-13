@@ -19,7 +19,7 @@ import {
 const budgetByEvent = [
   { event: "Next.js Conf", budget: 5000, spent: 3800 },
   { event: "TS Workshop", budget: 1500, spent: 1500 },
-  { event: "MongoDB Meetup", budget: 800, spent: 420 },
+  { event: "Cloud DB Meetup", budget: 800, spent: 420 },
 ];
 
 const spendingOverTime = [

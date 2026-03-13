@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "mongoose": "^9.3.0",
+    "@prisma/client": "^7.5.0",
+    "bcryptjs": "^3.0.3",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -24,6 +27,7 @@
     "eslint-config-next": "^16.1.6",
     "geist": "^1.7.0",
     "postcss": "^8.5.8",
+    "prisma": "^7.5.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   }

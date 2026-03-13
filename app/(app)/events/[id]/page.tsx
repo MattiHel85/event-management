@@ -1,5 +1,3 @@
-// import { connectDB } from "@/lib/mongodb";
-// import Event from "@/lib/models/Event";
 import { IEvent } from "@/lib/models/Event";
 import { MOCK_EVENTS } from "@/lib/mockData";
 import { formatAmount, getCurrency } from "@/lib/currencies";
@@ -11,10 +9,7 @@ import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 async function getEvent(id: string): Promise<IEvent | null> {
-  // TODO: restore when MongoDB is connected
-  // await connectDB();
-  // const event = await Event.findById(id).lean();
-  // return event ? JSON.parse(JSON.stringify(event)) : null;
+  // TODO: replace with Prisma lookup when Event model/table is implemented.
   return MOCK_EVENTS.find((e) => e._id === id) ?? null;
 }
 

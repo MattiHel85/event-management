@@ -14,9 +14,7 @@ export async function POST(
     return Response.json({ error: "Invalid budget item data" }, { status: 400 });
   }
 
-  // TODO: persist to MongoDB when connected
-  // await connectDB();
-  // await Event.findByIdAndUpdate(id, { $push: { budgetItems: newItem } });
+  // TODO: persist with Prisma when Event and BudgetItem tables are implemented.
 
   const newItem = { id: randomUUID(), category, description, amount };
   return Response.json(newItem, { status: 201 });

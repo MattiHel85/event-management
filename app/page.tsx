@@ -29,12 +29,20 @@ export default function LandingPage() {
         <span className="font-semibold text-slate-900 tracking-tight">
           Event Management
         </span>
-        <Link
-          href="/events"
-          className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
-        >
-          Sign In
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/signin"
+            className="text-slate-600 hover:text-slate-900 text-sm font-medium px-2 py-2 transition-colors"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+          >
+            Sign Up
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -47,12 +55,20 @@ export default function LandingPage() {
           Plan, budget, and manage your guests in one clean dashboard. Built for
           teams who care about the details.
         </p>
-        <Link
-          href="/events"
-          className="bg-blue-600 hover:bg-blue-500 text-white text-base font-medium px-8 py-4 rounded-xl transition-colors shadow-sm"
-        >
-          Get Started →
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Link
+            href="/signup"
+            className="bg-blue-600 hover:bg-blue-500 text-white text-base font-medium px-8 py-4 rounded-xl transition-colors shadow-sm"
+          >
+            Get Started →
+          </Link>
+          <Link
+            href="/signin"
+            className="text-slate-600 hover:text-slate-900 text-sm font-medium"
+          >
+            Already have an account? Sign In
+          </Link>
+        </div>
       </main>
 
       {/* Feature cards */}

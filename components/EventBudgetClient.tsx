@@ -61,7 +61,7 @@ export default function EventBudgetClient({ eventId, totalBudget, currency, init
     }, {})
   ).map(([name, value]) => ({ name, value }));
 
-  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAdd = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.description.trim() || !form.amount) return;
     setSaving(true);

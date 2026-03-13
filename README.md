@@ -26,13 +26,14 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 - TypeScript
 - Tailwind CSS
 - Recharts
-- Mongoose 
+- Prisma
+- PostgreSQL
 
 ## Current Data Mode
 
 The app currently uses mock data for UI development.
 
-MongoDB integration points are already scaffolded and marked with TODO comments, so you can switch to database persistence when ready.
+Prisma + PostgreSQL integration points are scaffolded for auth/users, and events are still running in mock mode until the event tables are implemented.
 
 ## Getting Started
 
@@ -78,7 +79,7 @@ npm run build
 
 ## Next Steps
 
-- Enable full MongoDB persistence for events and budget items
+- Enable full PostgreSQL persistence for events and budget items
 - Add authentication flow (sign-in/sign-up)
 - Add guest list management with RSVP tracking
 - Add role-based permissions (admin, organizer, viewer)

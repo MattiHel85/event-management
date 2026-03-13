@@ -1,28 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { connectDB } from "@/lib/mongodb";
-// import Event from "@/lib/models/Event";
-// import mongoose from "mongoose";
 
 interface Params {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(_req: NextRequest, { params }: Params) {
-  const { id } = await params;
-  // TODO: restore when MongoDB is connected
+  await params;
+  // TODO: replace with Prisma lookup when Event model/table is implemented.
   return NextResponse.json({ error: "Not implemented" }, { status: 501 });
 }
 
 export async function PUT(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const body = await req.json();
-  // TODO: restore when MongoDB is connected
+  // TODO: replace with Prisma update when Event model/table is implemented.
   return NextResponse.json({ _id: id, ...body });
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   await params;
-  // TODO: restore when MongoDB is connected
+  // TODO: replace with Prisma delete when Event model/table is implemented.
   return NextResponse.json({ success: true });
 }
 

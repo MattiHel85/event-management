@@ -1,5 +1,3 @@
-// import { connectDB } from "@/lib/mongodb";
-// import Event from "@/lib/models/Event";
 import { IEvent } from "@/lib/models/Event";
 import { MOCK_EVENTS } from "@/lib/mockData";
 import EventCard from "@/components/EventCard";
@@ -8,10 +6,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 async function getEvents(): Promise<IEvent[]> {
-  // TODO: replace with real DB call when MongoDB is connected
-  // await connectDB();
-  // const events = await Event.find().sort({ date: 1 }).lean();
-  // return JSON.parse(JSON.stringify(events));
+  // TODO: replace with Prisma query when Event model/table is implemented.
   return MOCK_EVENTS;
 }
 

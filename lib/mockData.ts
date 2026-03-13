@@ -38,9 +38,9 @@ export const MOCK_EVENTS: IEvent[] = [
   },
   {
     _id: "3",
-    title: "MongoDB Atlas Meetup",
+    title: "Cloud Database Meetup",
     description:
-      "Learn best practices for using MongoDB Atlas in production with Node.js and Next.js apps.",
+      "Learn best practices for running production-ready database backends with Node.js and Next.js apps.",
     date: "2026-05-20",
     location: "Online",
     capacity: 500,

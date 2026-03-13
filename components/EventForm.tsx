@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, SubmitEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { IEvent } from "@/lib/models/Event";
 import { CURRENCIES, getCurrency } from "@/lib/currencies";
@@ -24,7 +24,7 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");

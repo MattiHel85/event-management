@@ -1,5 +1,3 @@
-// import { connectDB } from "@/lib/mongodb";
-// import Event from "@/lib/models/Event";
 import { MOCK_EVENTS } from "@/lib/mockData";
 import EventBudgetClient from "@/components/EventBudgetClient";
 import Link from "next/link";
@@ -14,10 +12,7 @@ export default async function EventBudgetPage({
 }) {
   const { id } = await params;
 
-  // TODO: restore when MongoDB is connected
-  // await connectDB();
-  // const event = await Event.findById(id).lean();
-  // if (!event) return notFound();
+  // TODO: replace with Prisma lookup when Event model/table is implemented.
   const event = MOCK_EVENTS.find((e) => e._id === id);
   if (!event) return notFound();
 
