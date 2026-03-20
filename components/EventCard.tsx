@@ -1,12 +1,39 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import type { IEvent } from "@/lib/models/Event";
 
 export default function EventCard({ event }: { event: IEvent }) {
+  const [shareLabel, setShareLabel] = useState("Share");
+
   const formatted = new Date(event.date).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/events/${event._id}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: event.title,
+          text: `Check out ${event.title}`,
+          url: shareUrl,
+        });
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      setShareLabel("Copied");
+      window.setTimeout(() => setShareLabel("Share"), 2000);
+    } catch {
+      setShareLabel("Failed");
+      window.setTimeout(() => setShareLabel("Share"), 2000);
+    }
+  };
 
   return (
     <div className="border border-slate-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:border-blue-300 hover:shadow-md transition-all">
@@ -23,12 +50,21 @@ export default function EventCard({ event }: { event: IEvent }) {
         <span>📅 {formatted}</span>
         <span>📍 {event.location}</span>
       </div>
-      <Link
-        href={`/events/${event._id}`}
-        className="mt-2 text-sm text-blue-600 hover:text-blue-500 transition-colors"
-      >
-        View details →
-      </Link>
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={handleShare}
+          className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          {shareLabel}
+        </button>
+        <Link
+          href={`/events/${event._id}`}
+          className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
+        >
+          View details →
+        </Link>
+      </div>
     </div>
   );
 }
