@@ -2,6 +2,13 @@
 
 This roadmap outlines the planned evolution of Event Management.
 
+## Phase 0: Architecture Split (Backend + Frontend)
+- Split app into separate Node.js + TypeScript backend and React + Vite frontend
+- Move Prisma and database access to backend only
+- Migrate auth routes first (sign up, sign in, me, logout)
+- Add CORS/session setup for frontend-backend communication
+- Migrate event and budget APIs incrementally, then remove Next.js API routes
+
 ## Phase 1: Sharing And Calendar
 - Add Share Event button on event detail page
 - Support native Web Share API where available
@@ -76,14 +83,15 @@ This roadmap outlines the planned evolution of Event Management.
 - Add lightweight product analytics for feature usage
 
 ## Delivery Order (Recommended)
-1. Share Event + social sharing
-2. Venues + online meeting links
-3. Google Calendar `.ics` export
-4. Budget exports (CSV -> XLSX -> PDF)
-5. Event files and receipts
-6. Guest list model + UI
-7. Guest list exports (TXT -> XLSX -> PDF)
-8. Ticketing MVP (free + basic paid flow)
-9. Ticketing payments + operations
-10. Company + membership system
-11. Backup personal email flow
+1. Architecture split: Node.js/TypeScript backend + React/Vite frontend
+2. Share Event + social sharing
+3. Venues + online meeting links
+4. Google Calendar `.ics` export
+5. Budget exports (CSV -> XLSX -> PDF)
+6. Event files and receipts
+7. Guest list model + UI
+8. Guest list exports (TXT -> XLSX -> PDF)
+9. Ticketing MVP (free + basic paid flow)
+10. Ticketing payments + operations
+11. Company + membership system
+12. Backup personal email flow
