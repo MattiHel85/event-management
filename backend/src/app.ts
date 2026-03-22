@@ -2,6 +2,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import authRoutes from "./routes/auth.js";
+import eventRoutes from "./routes/events.js";
+import featureRequestRoutes from "./routes/featureRequests.js";
 
 export function createApp() {
   const app = express();
@@ -21,6 +23,8 @@ export function createApp() {
   });
 
   app.use("/api/auth", authRoutes);
+  app.use("/api/events", eventRoutes);
+  app.use("/api/feature-requests", featureRequestRoutes);
 
   return app;
 }

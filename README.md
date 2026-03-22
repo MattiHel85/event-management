@@ -1,6 +1,6 @@
 # Event Management
 
-A modern event planning dashboard built with Next.js and TypeScript.
+A modern event planning dashboard with a Vite + React frontend and an Express + Prisma backend.
 
 Create events, set capacity, and manage per-event budgets with multi-currency support.
 
@@ -22,64 +22,122 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 
 ## Tech Stack
 
-- Next.js (App Router)
+- React + Vite
 - TypeScript
 - Tailwind CSS
 - Recharts
-- Prisma
+- Express
+- Prisma ORM
 - PostgreSQL
-
-## Current Data Mode
-
-The app currently uses mock data for UI development.
-
-Prisma + PostgreSQL integration points are scaffolded for auth/users, and events are still running in mock mode until the event tables are implemented.
 
 ## Getting Started
 
 ### 1. Install dependencies
 
 ```bash
-npm install
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-### 2. Run development server
+### 2. Configure environment variables
+
+Create these files:
+
+- backend/.env
+- frontend/.env
+
+Required values:
+
+- backend/.env
+
+```env
+DATABASE_URL="postgresql://..."
+JWT_SECRET="your-secret"
+CORS_ORIGIN="http://localhost:5173"
+PORT="4000"
+NODE_ENV="development"
+```
+
+- frontend/.env
+
+```env
+VITE_API_BASE_URL="http://localhost:4000"
+```
+
+### 3. Run Prisma migration
 
 ```bash
+cd backend
+npm run prisma:migrate
+```
+
+### 4. Run development servers
+
+In terminal 1:
+
+```bash
+cd backend
 npm run dev
 ```
 
-Open http://localhost:3000
-
-### 3. Build for production
+In terminal 2:
 
 ```bash
-npm run build
+cd frontend
+npm run dev
 ```
+
+Open http://localhost:5173
+
+### 5. Build for production
+
+```bash
+cd backend && npm run build
+cd ../frontend && npm run build
+```
+
+## Root Commands
+
+You can also run common commands directly from the repository root:
+
+```bash
+npm run dev:backend
+npm run dev:frontend
+npm run build:backend
+npm run build:frontend
+```
+
+Tip: run `dev:backend` and `dev:frontend` in separate terminals during local development.
 
 ## Project Routes
 
 - / : Landing page
 - /events : Events list
 - /events/new : Create event
-- /events/[id] : Event details + edit
-- /events/[id]/budget : Event-specific budget dashboard
+- /events/:id : Event details + edit
+- /events/:id/budget : Event-specific budget dashboard
 - /budget : Global budget view (legacy dashboard page)
+- /signin : Sign in page
+- /signup : Sign up page
+- /feature-request : Feature request page
 
 ## API Routes
 
+- /api/auth/signup
+- /api/auth/signin
+- /api/auth/me
+- /api/auth/logout
 - /api/events
-- /api/events/[id]
-- /api/events/[id]/budget
+- /api/events/:id
+- /api/events/:id/budget
+- /api/feature-requests
 
 ## Notes
 
 - Budget currency is selected on the event form and carried through event budget displays.
-- Event budget items are currently added via API route and maintained in client state for preview mode.
+- Event and budget data are persisted with PostgreSQL through Prisma.
 
 ## Next Steps
 
-- Enable full PostgreSQL persistence for events and budget items
-- Add authentication flow (sign-in/sign-up)
 - Add guest list management with RSVP tracking
 - Add role-based permissions (admin, organizer, viewer)
