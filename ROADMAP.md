@@ -11,9 +11,9 @@ This roadmap outlines the planned evolution of Event Management.
 
 ## Phase 1: Sharing And Calendar
 - [ ] Add Share Event button on event detail page
-- [ ] Support native Web Share API where available
+- [x] Support native Web Share API where available
 - [ ] Add social share fallbacks (X, LinkedIn, Facebook, WhatsApp, Email)
-- [ ] Add Copy Link fallback
+- [x] Add Copy Link fallback
 - [ ] Add Google Calendar export via `.ics` file
 - [ ] Add direct Google Calendar integration (OAuth) in a later step
 

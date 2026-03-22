@@ -139,5 +139,9 @@ Tip: run `dev:backend` and `dev:frontend` in separate terminals during local dev
 
 ## Next Steps
 
-- Add guest list management with RSVP tracking
+- Phase 1: add Share Event action on event detail page
+- Phase 1: add social share fallbacks (X, LinkedIn, Facebook, WhatsApp, Email)
+- Phase 1: add Google Calendar `.ics` export
+- Phase 1: add direct Google Calendar integration (OAuth)
+- Build guest list management with RSVP tracking
 - Add role-based permissions (admin, organizer, viewer)
