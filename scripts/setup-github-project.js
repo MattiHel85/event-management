@@ -1001,6 +1001,10 @@ Phase 9 – Security and Reliability
 
 // ─── GitHub API helpers ───────────────────────────────────────────────────────
 
+async function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 async function ghRequest(method, path, body) {
   const url = `${BASE}${path}`;
   if (DRY_RUN) {
@@ -1043,11 +1047,44 @@ async function createIssue(issue) {
   return data.number;
 }
 
+async function closeIssue(number) {
+  await ghRequest("PATCH", `/issues/${number}`, { state: "closed" });
+  console.log(`  ✗ closed #${number}`);
+}
+
+async function listOpenIssues() {
+  if (DRY_RUN) {
+    console.log(`[DRY RUN] GET ${BASE}/issues?state=open&per_page=100`);
+    return [];
+  }
+  const issues = [];
+  let page = 1;
+  while (true) {
+    const batch = await ghRequest("GET", `/issues?state=open&per_page=100&page=${page}`);
+    if (!Array.isArray(batch) || batch.length === 0) break;
+    issues.push(...batch);
+    if (batch.length < 100) break;
+    page++;
+  }
+  return issues;
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
   console.log(`\n=== GitHub Project Setup${DRY_RUN ? " (DRY RUN)" : ""} ===\n`);
   console.log(`Repository: ${OWNER}/${REPO}\n`);
+
+  // 0. Close existing open issues
+  console.log("── Closing existing open issues ──");
+  const existing = await listOpenIssues();
+  if (existing.length === 0 && !DRY_RUN) {
+    console.log("  · no open issues to close");
+  }
+  for (const issue of existing) {
+    await closeIssue(issue.number);
+    await sleep(300);
+  }
 
   // 1. Labels
   console.log("── Creating labels ──");
@@ -1078,7 +1115,7 @@ async function main() {
       labels: [...issue.labels, issue.status, issue.priority],
     });
     // Respect GitHub's secondary rate limit
-    await new Promise((r) => setTimeout(r, 500));
+    await sleep(500);
   }
 
   console.log("\n✅ Done.");
