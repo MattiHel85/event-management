@@ -101,6 +101,7 @@ cd ../frontend && npm run build
 You can also run common commands directly from the repository root:
 
 ```bash
+npm run setup:github-project
 npm run dev:backend
 npm run dev:frontend
 npm run build:backend
@@ -108,6 +109,33 @@ npm run build:frontend
 ```
 
 Tip: run `dev:backend` and `dev:frontend` in separate terminals during local development.
+
+## GitHub Project Setup
+
+The repository includes [scripts/setup-github-project.js](c:\Users\matti\Desktop\GitProjektit\event-management\scripts\setup-github-project.js) to create roadmap labels and issues in GitHub.
+
+Do not store a real personal access token in this repository, in the README, or in committed shell history.
+
+Use a token with repository issue/label write access and provide it through an environment variable only at runtime.
+
+Git Bash:
+
+```bash
+GITHUB_TOKEN="<your-github-token>" npm run setup:github-project
+```
+
+PowerShell:
+
+```powershell
+$env:GITHUB_TOKEN = "<your-github-token>"
+npm run setup:github-project
+```
+
+Dry run:
+
+```bash
+DRY_RUN=true npm run setup:github-project
+```
 
 ## Project Routes
 
