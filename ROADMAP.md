@@ -9,7 +9,18 @@ This roadmap outlines the planned evolution of Event Management.
 - [x] Add CORS/session setup for frontend-backend communication
 - [x] Migrate event and budget APIs incrementally, then remove Next.js API routes
 
-## Phase 1: Sharing And Calendar
+## Phase 1: Organizations, Membership, And Event Visibility
+- [ ] Add organization model and organization creation flow
+- [ ] Allow inviting and assigning users to an organization
+- [ ] Add membership roles (Owner, Admin, Member, Viewer)
+- [ ] Let each user keep both private and work emails on one account
+- [ ] Keep account identity separate from organization membership
+- [ ] Remove access to the old organization when a user leaves or is removed
+- [ ] Allow the same user account to be invited into a new organization later
+- [ ] Scope all non-public events to users in the same organization only
+- [ ] Allow events to be marked public so they are visible outside the organization
+
+## Phase 2: Sharing And Calendar
 - [ ] Add Share Event button on event detail page
 - [x] Support native Web Share API where available
 - [ ] Add social share fallbacks (X, LinkedIn, Facebook, WhatsApp, Email)
@@ -17,7 +28,7 @@ This roadmap outlines the planned evolution of Event Management.
 - [ ] Add Google Calendar export via `.ics` file
 - [ ] Add direct Google Calendar integration (OAuth) in a later step
 
-## Phase 2: Venues And Online Meeting Links
+## Phase 3: Venues And Online Meeting Links
 - [ ] Build searchable venue directory (filterable by location, capacity, amenities)
 - [ ] Add venue model and link to events
 - [ ] Support in-person venues with address, map, parking/amenities info
@@ -26,13 +37,13 @@ This roadmap outlines the planned evolution of Event Management.
 - [ ] Store meeting links and generate shareable invite with platform link
 - [ ] Include meeting link in calendar exports and event shares
 
-## Phase 3: Budget Exports
+## Phase 4: Budget Exports
 - [ ] Export event budgets as CSV
 - [ ] Export event budgets as XLSX
 - [ ] Export event budgets as PDF
 - [ ] Add export actions directly on each event budget page
 
-## Phase 4: Event Files And Receipts
+## Phase 5: Event Files And Receipts
 - [ ] Add Files section on each event detail page
 - [ ] Upload receipt and document files (PDF, JPG, PNG, HEIC, WEBP, DOCX, XLSX, CSV, TXT)
 - [ ] Attach files to budget entries or keep them as general event documents
@@ -41,14 +52,14 @@ This roadmap outlines the planned evolution of Event Management.
 - [ ] Enforce file type and size validation
 - [ ] Restrict file access to authorized event members only
 
-## Phase 5: Guest List And Exports
+## Phase 6: Guest List And Exports
 - [ ] Build guest list model and UI per event
 - [ ] Track RSVP status and basic guest notes
 - [ ] Export guest lists as TXT
 - [ ] Export guest lists as XLSX
 - [ ] Export guest lists as PDF
 
-## Phase 6: Ticketing MVP
+## Phase 7: Ticketing MVP
 - [ ] Add ticket types per event (Free, Paid, Donation)
 - [ ] Set ticket quantity limits and sales windows
 - [ ] Collect attendee registration details at checkout
@@ -56,42 +67,29 @@ This roadmap outlines the planned evolution of Event Management.
 - [ ] Add reusable custom ticket template for app view, email, and printable PDF
 - [ ] Add basic organizer sales dashboard (sold, remaining, gross)
 
-## Phase 7: Ticketing Payments And Ops
+## Phase 8: Ticketing Payments And Ops
 - [ ] Integrate payment provider (Stripe)
 - [ ] Handle refunds and canceled orders
 - [ ] Add promo/discount codes
 - [ ] Add simple check-in support (manual list + optional QR later)
 - [ ] Add payout and fee reporting for organizers
 
-## Phase 8: Companies And Memberships
-- [ ] Add company/organization model
-- [ ] Allow multiple users under one company
-- [ ] Use membership roles (Owner, Admin, Member, Viewer)
-- [ ] Let users leave a company and join another without losing account
-- [ ] Keep user identity separate from company membership
-
-## Phase 9: Account Access Safety
-- [ ] Detect likely work-email accounts and prompt for personal backup email
-- [ ] Verify backup personal email before enabling login
-- [ ] Preserve account access if work email is deactivated
-- [ ] Add account/email change audit trail
-
-## Phase 10: Security And Reliability
-- [ ] Enforce company-scoped authorization across all resources
+## Phase 9: Security And Reliability
+- [ ] Enforce organization-scoped authorization across all resources
 - [ ] Add duplicate-prevention for repeated export/share actions
 - [ ] Add automated tests for export formats and API responses
 - [ ] Add lightweight product analytics for feature usage
 
 ## Delivery Order (Recommended)
 1. [x] Architecture split: Node.js/TypeScript backend + React/Vite frontend
-2. [ ] Share Event + social sharing
-3. [ ] Venues + online meeting links
-4. [ ] Google Calendar `.ics` export
-5. [ ] Budget exports (CSV -> XLSX -> PDF)
-6. [ ] Event files and receipts
-7. [ ] Guest list model + UI
-8. [ ] Guest list exports (TXT -> XLSX -> PDF)
-9. [ ] Ticketing MVP (free + basic paid flow)
-10. [ ] Ticketing payments + operations
-11. [ ] Company + membership system
-12. [ ] Backup personal email flow
+2. [ ] Organization creation + user assignment
+3. [ ] Organization-scoped event visibility + public events
+4. [ ] Share Event + social sharing
+5. [ ] Venues + online meeting links
+6. [ ] Google Calendar `.ics` export
+7. [ ] Budget exports (CSV -> XLSX -> PDF)
+8. [ ] Event files and receipts
+9. [ ] Guest list model + UI
+10. [ ] Guest list exports (TXT -> XLSX -> PDF)
+11. [ ] Ticketing MVP (free + basic paid flow)
+12. [ ] Ticketing payments + operations
