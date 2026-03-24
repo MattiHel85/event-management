@@ -10,6 +10,13 @@ const eventSchema = z.object({
   date: z.string().trim().min(1),
   location: z.string().trim().min(1),
   capacity: z.number().int().min(1),
+  ticketUrl: z
+    .string()
+    .trim()
+    .default("")
+    .refine((value) => value === "" || z.string().url().safeParse(value).success, {
+      message: "Invalid ticketUrl",
+    }),
   budget: z.number().min(0).optional(),
   currency: z.string().trim().min(1).optional(),
 });
@@ -27,6 +34,7 @@ function toApiEvent(event: {
   date: Date;
   location: string;
   capacity: number;
+  ticketUrl?: string | null;
   budget: number | null;
   currency: string | null;
   createdAt: Date;
@@ -39,6 +47,7 @@ function toApiEvent(event: {
     date: event.date.toISOString().slice(0, 10),
     location: event.location,
     capacity: event.capacity,
+    ticketUrl: event.ticketUrl ?? "",
     budget: event.budget ?? undefined,
     currency: event.currency ?? undefined,
     budgetItems: event.budgetItems,
@@ -81,6 +90,7 @@ router.post("/", async (req, res) => {
         date: eventDate,
         location: payload.location,
         capacity: payload.capacity,
+        ticketUrl: payload.ticketUrl,
         budget: payload.budget,
         currency: payload.currency ?? "USD",
       },
@@ -133,6 +143,7 @@ router.put("/:id", async (req, res) => {
         date: eventDate,
         location: payload.location,
         capacity: payload.capacity,
+        ticketUrl: payload.ticketUrl,
         budget: payload.budget,
         currency: payload.currency ?? "USD",
       },

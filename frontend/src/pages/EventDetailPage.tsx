@@ -49,6 +49,19 @@ export default function EventDetailPage() {
             <span className="text-slate-400 block">Capacity</span>
             <span className="text-slate-800 font-medium">{event.capacity} attendees</span>
           </div>
+          {event.ticketUrl && (
+            <div>
+              <span className="text-slate-400 block">Tickets</span>
+              <a
+                href={event.ticketUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
+              >
+                Open ticket page
+              </a>
+            </div>
+          )}
           {event.budget != null && (
             <div>
               <span className="text-slate-400 block">Budget</span>

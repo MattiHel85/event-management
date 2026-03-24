@@ -36,7 +36,10 @@ export default function EventCard({ event }: { event: IEvent }) {
   return (
     <div className="border border-slate-200 rounded-xl p-6 bg-white shadow-sm flex flex-col gap-3 hover:border-blue-300 hover:shadow-md transition-all">
       <div className="flex items-start justify-between gap-4">
-        <h2 className="text-slate-900 font-semibold text-lg leading-snug">{event.title}</h2>
+        <Link to={`/events/${event._id}`} className="text-slate-900 font-semibold text-lg leading-snug">
+            {event.title}
+        </Link>
+        {/* <h2 className="text-slate-900 font-semibold text-lg leading-snug">{event.title}</h2> */}
         <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">
           {event.capacity} spots
         </span>
@@ -54,9 +57,21 @@ export default function EventCard({ event }: { event: IEvent }) {
         >
           {shareLabel}
         </button>
-        <Link to={`/events/${event._id}`} className="text-sm text-blue-600 hover:text-blue-500 transition-colors">
-          View details →
-        </Link>
+        <div className="flex items-center gap-3">
+          {event.ticketUrl && (
+            <a
+              href={event.ticketUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              Buy tickets
+            </a>
+          )}
+          <Link to={`/events/${event._id}`} className="text-sm text-blue-600 hover:text-blue-500 transition-colors">
+            View details →
+          </Link>
+        </div>
       </div>
     </div>
   );

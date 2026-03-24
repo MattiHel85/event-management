@@ -9,6 +9,7 @@ export const MOCK_EVENTS: IEvent[] = [
     date: "2026-04-15",
     location: "Stockholm, Sweden",
     capacity: 200,
+    ticketUrl: "https://tickets.example.com/nextjs-conference-2026",
     budget: 5000,
     currency: "SEK",
     budgetItems: [
@@ -27,6 +28,7 @@ export const MOCK_EVENTS: IEvent[] = [
     date: "2026-05-02",
     location: "Gothenburg, Sweden",
     capacity: 30,
+    ticketUrl: "https://tickets.example.com/typescript-workshop",
     budget: 1500,
     currency: "SEK",
     budgetItems: [
@@ -44,6 +46,7 @@ export const MOCK_EVENTS: IEvent[] = [
     date: "2026-05-20",
     location: "Online",
     capacity: 500,
+    ticketUrl: "https://tickets.example.com/cloud-database-meetup",
     budget: 800,
     currency: "USD",
     budgetItems: [

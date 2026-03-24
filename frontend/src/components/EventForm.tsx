@@ -19,6 +19,7 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
     date: initial?.date ? initial.date.slice(0, 10) : "",
     location: initial?.location ?? "",
     capacity: initial?.capacity ?? "",
+    ticketUrl: initial?.ticketUrl ?? "",
     budget: initial?.budget ?? "",
     currency: initial?.currency ?? "USD",
   });
@@ -37,6 +38,7 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
         date: String(form.date),
         location: String(form.location).trim(),
         capacity: Number(form.capacity),
+        ticketUrl: String(form.ticketUrl).trim(),
         budget: form.budget !== "" ? Number(form.budget) : undefined,
         currency: String(form.currency),
       };
@@ -157,6 +159,18 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
           onChange={(e) => setForm({ ...form, location: e.target.value })}
           className={inputClass}
           placeholder="Venue or address"
+        />
+      </div>
+      <div>
+        <label className="block text-sm text-slate-600 mb-1.5">
+          Ticket URL <span className="text-slate-400 font-normal">(optional)</span>
+        </label>
+        <input
+          type="url"
+          value={form.ticketUrl}
+          onChange={(e) => setForm({ ...form, ticketUrl: e.target.value })}
+          className={inputClass}
+          placeholder="https://example.com/tickets"
         />
       </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}

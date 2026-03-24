@@ -15,6 +15,7 @@ interface EventInput {
   date: string;
   location: string;
   capacity: number;
+  ticketUrl: string;
   budget?: number;
   currency?: string;
 }
