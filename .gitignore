@@ -1,6 +1,5 @@
 **/node_modules
 .env
-PRODUCT_IDEAS.md
 
 # Build outputs
 .next/
