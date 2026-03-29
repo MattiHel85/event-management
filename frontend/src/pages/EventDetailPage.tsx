@@ -3,10 +3,12 @@ import { formatAmount, getCurrency } from "../lib/currencies";
 import EventForm from "../components/EventForm";
 import DeleteButton from "../components/DeleteButton";
 import { useEvents } from "../context/EventsContext";
+import { useSession } from "../context/SessionContext";
 
 export default function EventDetailPage() {
   const { id = "" } = useParams();
   const { findEventById, loading, error } = useEvents();
+  const { user } = useSession();
   const event = findEventById(id);
 
   if (loading) {
@@ -20,6 +22,13 @@ export default function EventDetailPage() {
   if (!event) {
     return <Navigate to="/events" replace />;
   }
+
+  const isCreator = Boolean(user?.id && event.createdById && user.id === event.createdById);
+  const isOrgMember =
+    Boolean(event.organizationId) &&
+    Boolean(user?.memberships?.some((membership) => membership.organizationId === event.organizationId));
+  const canViewBudget = isCreator || isOrgMember;
+  const rsvpHref = event.ticketUrl || `mailto:?subject=RSVP%20${encodeURIComponent(event.title)}`;
 
   return (
     <div className="max-w-2xl mx-auto pt-4 pb-24">
@@ -62,7 +71,7 @@ export default function EventDetailPage() {
               </a>
             </div>
           )}
-          {event.budget != null && (
+          {canViewBudget && event.budget != null && (
             <div>
               <span className="text-slate-400 block">Budget</span>
               <span className="text-slate-800 font-medium">
@@ -74,10 +83,24 @@ export default function EventDetailPage() {
             </div>
           )}
         </div>
-        <div className="mt-5 pt-5 border-t border-slate-100">
-          <Link to={`/events/${event._id}/budget`} className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
-            📊 View Budget →
-          </Link>
+        <div className="mt-5 pt-5 border-t border-slate-100 flex items-center gap-4">
+          {canViewBudget ? (
+            <Link to={`/events/${event._id}/budget`} className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">
+              📊 View Budget →
+            </Link>
+          ) : (
+            <>
+              <span className="text-sm text-slate-500">Budget is visible to organization members only.</span>
+              <a
+                href={rsvpHref}
+                target={event.ticketUrl ? "_blank" : undefined}
+                rel={event.ticketUrl ? "noreferrer" : undefined}
+                className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-600 transition-colors"
+              >
+                RSVP to Event →
+              </a>
+            </>
+          )}
         </div>
       </div>
 

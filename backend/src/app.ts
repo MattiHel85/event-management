@@ -4,6 +4,8 @@ import express from "express";
 import authRoutes from "./routes/auth.js";
 import eventRoutes from "./routes/events.js";
 import featureRequestRoutes from "./routes/featureRequests.js";
+import organizationRoutes from "./routes/organizations.js";
+import budgetRoutes from "./routes/budgets.js";
 
 export function createApp() {
   const app = express();
@@ -24,6 +26,8 @@ export function createApp() {
 
   app.use("/api/auth", authRoutes);
   app.use("/api/events", eventRoutes);
+  app.use("/api/budgets", budgetRoutes);
+  app.use("/api/admin/organizations", organizationRoutes);
   app.use("/api/feature-requests", featureRequestRoutes);
 
   return app;

@@ -1,10 +1,12 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import EventBudgetClient from "../components/EventBudgetClient";
 import { useEvents } from "../context/EventsContext";
+import { useSession } from "../context/SessionContext";
 
 export default function EventBudgetPage() {
   const { id = "" } = useParams();
   const { findEventById, loading, error } = useEvents();
+  const { user } = useSession();
   const event = findEventById(id);
 
   if (loading) {
@@ -17,6 +19,16 @@ export default function EventBudgetPage() {
 
   if (!event) {
     return <Navigate to="/events" replace />;
+  }
+
+  const isCreator = Boolean(user?.id && event.createdById && user.id === event.createdById);
+  const isOrgMember =
+    Boolean(event.organizationId) &&
+    Boolean(user?.memberships?.some((membership) => membership.organizationId === event.organizationId));
+  const canViewBudget = isCreator || isOrgMember;
+
+  if (!canViewBudget) {
+    return <Navigate to={`/events/${id}`} replace />;
   }
 
   return (

@@ -35,7 +35,7 @@ export default function SignInPage() {
 
       setStatus("success");
       setMessage(data.message ?? "Sign in successful.");
-      window.setTimeout(() => navigate("/events"), 300);
+      window.setTimeout(() => navigate("/dashboard"), 300);
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Could not sign in right now.");

@@ -11,12 +11,25 @@ interface SignInInput {
   password: string;
 }
 
-interface User {
+export interface UserMembership {
+  id: string;
+  role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
+  organizationId: string;
+  organization: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+}
+
+export interface User {
   id: string;
   name: string | null;
   email: string;
+  role: "USER" | "PLATFORM_ADMIN";
   createdAt: string;
   updatedAt: string;
+  memberships: UserMembership[];
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

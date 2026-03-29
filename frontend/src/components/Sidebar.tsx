@@ -1,14 +1,28 @@
 import { Link, useLocation } from "react-router-dom";
+import { useSession } from "../context/SessionContext";
 
-const links = [
-  { href: "/events/new", label: "Create Event", icon: "✚" },
-  { href: "/events", label: "Events", icon: "📅" },
-  { href: "/budget", label: "Budget", icon: "📊" },
-];
+type NavLink = { href: string; label: string; icon: string };
 
 export default function Sidebar() {
   const { pathname } = useLocation();
+  const { user } = useSession();
   const isFeatureRequest = pathname === "/feature-request";
+  const isPlatformAdmin = user?.role === "PLATFORM_ADMIN";
+
+  const links: NavLink[] = isPlatformAdmin
+    ? [
+        { href: "/dashboard", label: "Dashboard", icon: "🏢" },
+        { href: "/events", label: "Admin Events", icon: "📅" },
+        { href: "/events/new", label: "Create Event", icon: "✚" },
+        { href: "/budget", label: "Budgets", icon: "📊" },
+        { href: "/admin/organizations", label: "Organizations", icon: "🛠" },
+      ]
+    : [
+        { href: "/dashboard", label: "Dashboard", icon: "🏠" },
+        { href: "/events", label: "My Events", icon: "📅" },
+        { href: "/events/new", label: "Create Event", icon: "✚" },
+        { href: "/budget", label: "Budgets", icon: "📊" },
+      ];
 
   return (
     <aside className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-slate-900 flex flex-col z-10">

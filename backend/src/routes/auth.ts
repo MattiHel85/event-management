@@ -20,6 +20,29 @@ const signinSchema = z.object({
   password: z.string().min(1),
 });
 
+const userPublicSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  createdAt: true,
+  updatedAt: true,
+  memberships: {
+    select: {
+      id: true,
+      role: true,
+      organizationId: true,
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  },
+} as const;
+
 function authCookieOptions() {
   const isProduction = process.env.NODE_ENV === "production";
   return {
@@ -61,7 +84,7 @@ router.post("/signup", async (req, res) => {
 
     const user = await prisma.user.create({
       data: { name: name || null, email, passwordHash },
-      select: { id: true, name: true, email: true, createdAt: true, updatedAt: true },
+      select: userPublicSelect,
     });
 
     return res.status(201).json(user);
@@ -102,15 +125,18 @@ router.post("/signin", async (req, res) => {
 
     res.cookie(TOKEN_COOKIE, token, authCookieOptions());
 
+    const safeUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: userPublicSelect,
+    });
+
+    if (!safeUser) {
+      return res.status(500).json({ error: "Failed to load user profile" });
+    }
+
     return res.json({
       message: "Sign in successful",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+      user: safeUser,
     });
   } catch {
     return res.status(500).json({ error: "Failed to sign in" });
@@ -121,7 +147,7 @@ router.get("/me", requireAuth, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.auth!.userId },
-      select: { id: true, name: true, email: true, createdAt: true, updatedAt: true },
+      select: userPublicSelect,
     });
 
     if (!user) {

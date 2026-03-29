@@ -13,35 +13,16 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
-const budgetByEvent = [
-  { event: "Next.js Conf", budget: 5000, spent: 3800 },
-  { event: "TS Workshop", budget: 1500, spent: 1500 },
-  { event: "Cloud DB Meetup", budget: 800, spent: 420 },
-];
-
-const spendingOverTime = [
-  { month: "Jan", spent: 1200 },
-  { month: "Feb", spent: 2100 },
-  { month: "Mar", spent: 1800 },
-  { month: "Apr", spent: 3400 },
-  { month: "May", spent: 2900 },
-  { month: "Jun", spent: 4200 },
-];
-
-const breakdown = [
-  { name: "Venue", value: 4200 },
-  { name: "Catering", value: 2800 },
-  { name: "Marketing", value: 1400 },
-  { name: "Equipment", value: 900 },
-  { name: "Other", value: 420 },
-];
+import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useEvents } from "../context/EventsContext";
+import { fetchBudgetPlan, updateBudgetPlan, type BudgetPeriod } from "../lib/api/budgets";
 
 const PIE_COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"];
 
-const totalBudget = budgetByEvent.reduce((s, e) => s + e.budget, 0);
-const totalSpent = budgetByEvent.reduce((s, e) => s + e.spent, 0);
-const remaining = totalBudget - totalSpent;
+function formatMonth(date: Date) {
+  return date.toLocaleString("en-US", { month: "short" });
+}
 
 function StatCard({
   label,
@@ -64,14 +45,152 @@ function StatCard({
 }
 
 export default function BudgetPage() {
+  const { events, loading, error } = useEvents();
+  const [period, setPeriod] = useState<BudgetPeriod>("YEARLY");
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [quarter, setQuarter] = useState<number>(Math.floor(new Date().getMonth() / 3) + 1);
+  const [planAmount, setPlanAmount] = useState<number>(0);
+  const [planLoading, setPlanLoading] = useState<boolean>(false);
+  const [planSaving, setPlanSaving] = useState<boolean>(false);
+  const [planError, setPlanError] = useState<string>("");
+
+  const budgetByEvent = useMemo(
+    () =>
+      events.map((event) => {
+        const spent = (event.budgetItems ?? []).reduce((sum, item) => sum + item.amount, 0);
+        return {
+          id: event._id ?? "",
+          event: event.title,
+          budget: event.budget ?? 0,
+          spent,
+          remaining: (event.budget ?? 0) - spent,
+          date: event.date,
+        };
+      }),
+    [events]
+  );
+
+  const spendingOverTime = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const row of budgetByEvent) {
+      const key = formatMonth(new Date(row.date));
+      map.set(key, (map.get(key) ?? 0) + row.spent);
+    }
+    return Array.from(map.entries()).map(([month, spent]) => ({ month, spent }));
+  }, [budgetByEvent]);
+
+  const breakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const event of events) {
+      for (const item of event.budgetItems ?? []) {
+        map.set(item.category, (map.get(item.category) ?? 0) + item.amount);
+      }
+    }
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+  }, [events]);
+
+  const totalBudget = useMemo(() => budgetByEvent.reduce((s, e) => s + e.budget, 0), [budgetByEvent]);
+  const totalSpent = useMemo(() => budgetByEvent.reduce((s, e) => s + e.spent, 0), [budgetByEvent]);
+  const remaining = totalBudget - totalSpent;
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      setPlanLoading(true);
+      setPlanError("");
+      try {
+        const plan = await fetchBudgetPlan({ period, year, quarter });
+        setPlanAmount(plan.amount);
+      } catch (err) {
+        setPlanError(err instanceof Error ? err.message : "Failed to load budget plan");
+      } finally {
+        setPlanLoading(false);
+      }
+    };
+
+    void loadPlan();
+  }, [period, year, quarter]);
+
+  const savePlan = async () => {
+    setPlanSaving(true);
+    setPlanError("");
+    try {
+      const saved = await updateBudgetPlan({
+        period,
+        year,
+        quarter: period === "QUARTERLY" ? quarter : undefined,
+        amount: planAmount,
+      });
+      setPlanAmount(saved.amount);
+    } catch (err) {
+      setPlanError(err instanceof Error ? err.message : "Failed to save budget plan");
+    } finally {
+      setPlanSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-slate-600">Loading budgets...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
   return (
     <div className="space-y-8">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 className="text-base font-semibold text-slate-900 mb-4">Budget Plan</h2>
+        <div className="grid gap-3 md:grid-cols-4">
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as BudgetPeriod)}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="YEARLY">Yearly</option>
+            <option value="QUARTERLY">Quarterly</option>
+          </select>
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+          <select
+            value={quarter}
+            onChange={(e) => setQuarter(Number(e.target.value))}
+            disabled={period !== "QUARTERLY"}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+          >
+            <option value={1}>Q1</option>
+            <option value={2}>Q2</option>
+            <option value={3}>Q3</option>
+            <option value={4}>Q4</option>
+          </select>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={planAmount}
+              onChange={(e) => setPlanAmount(Number(e.target.value))}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+            <button
+              onClick={savePlan}
+              disabled={planSaving || planLoading}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            >
+              {planSaving ? "Saving" : "Save"}
+            </button>
+          </div>
+        </div>
+        {planError ? <p className="mt-3 text-sm text-red-500">{planError}</p> : null}
+      </div>
+
       <div className="grid grid-cols-3 gap-6">
         <StatCard label="Total Budget" value={`$${totalBudget.toLocaleString()}`} sub="Across all events" />
         <StatCard
           label="Total Spent"
           value={`$${totalSpent.toLocaleString()}`}
-          sub={`${Math.round((totalSpent / totalBudget) * 100)}% of budget`}
+          sub={`${totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0}% of budget`}
           color="text-blue-600"
         />
         <StatCard
@@ -136,6 +255,44 @@ export default function BudgetPage() {
             </PieChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 className="text-base font-semibold text-slate-900 mb-4">Event Budgets</h2>
+        {budgetByEvent.length === 0 ? (
+          <p className="text-sm text-slate-600">No event budgets yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 text-left text-slate-600">
+                  <th className="py-2 pr-4">Event</th>
+                  <th className="py-2 pr-4">Budget</th>
+                  <th className="py-2 pr-4">Spent</th>
+                  <th className="py-2 pr-4">Remaining</th>
+                  <th className="py-2 pr-4">Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                {budgetByEvent.map((row) => (
+                  <tr key={row.id} className="border-b border-slate-100 text-slate-800">
+                    <td className="py-2 pr-4">{row.event}</td>
+                    <td className="py-2 pr-4">${row.budget.toLocaleString()}</td>
+                    <td className="py-2 pr-4">${row.spent.toLocaleString()}</td>
+                    <td className={`py-2 pr-4 ${row.remaining < 0 ? "text-red-500" : "text-emerald-600"}`}>
+                      ${row.remaining.toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-4">
+                      <Link className="text-blue-600 hover:text-blue-500" to={`/events/${row.id}/budget`}>
+                        View event budget
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

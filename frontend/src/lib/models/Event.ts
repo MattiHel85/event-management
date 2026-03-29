@@ -7,6 +7,8 @@ export interface IBudgetItem {
 
 export interface IEvent {
   _id?: string;
+  createdById?: string;
+  organizationId?: string;
   title: string;
   description: string;
   date: string;

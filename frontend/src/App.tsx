@@ -10,6 +10,8 @@ import EventDetailPage from "./pages/EventDetailPage";
 import EventBudgetPage from "./pages/EventBudgetPage";
 import BudgetPage from "./pages/BudgetPage";
 import FeatureRequestPage from "./pages/FeatureRequestPage";
+import DashboardPage from "./pages/DashboardPage";
+import AdminOrganizationsPage from "./pages/AdminOrganizationsPage";
 
 function AppShell({ children }: { children: ReactNode }) {
   return <AppLayout>{children}</AppLayout>;
@@ -22,6 +24,22 @@ export default function App() {
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/signup" element={<SignUpPage />} />
 
+      <Route
+        path="/dashboard"
+        element={
+          <AppShell>
+            <DashboardPage />
+          </AppShell>
+        }
+      />
+      <Route
+        path="/admin/organizations"
+        element={
+          <AppShell>
+            <AdminOrganizationsPage />
+          </AppShell>
+        }
+      />
       <Route
         path="/events"
         element={
