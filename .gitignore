@@ -33,3 +33,6 @@ yarn-debug.log*
 # Local development
 .cache/
 .turbo/
+
+# Local planning notes
+2026-04-03-phase-1-checklist.md

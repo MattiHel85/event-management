@@ -28,7 +28,7 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 - Recharts
 - Express
 - Prisma ORM
-- PostgreSQL
+- MongoDB
 
 ## Getting Started
 
@@ -51,7 +51,7 @@ Required values:
 - backend/.env
 
 ```env
-DATABASE_URL="postgresql://..."
+DATABASE_URL="mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority"
 JWT_SECRET="your-secret"
 CORS_ORIGIN="http://localhost:5173"
 PORT="4000"
@@ -64,11 +64,11 @@ NODE_ENV="development"
 VITE_API_BASE_URL="http://localhost:4000"
 ```
 
-### 3. Run Prisma migration
+### 3. Generate Prisma client
 
 ```bash
 cd backend
-npm run prisma:migrate
+npm run prisma:generate
 ```
 
 ### 4. Run development servers
@@ -163,7 +163,7 @@ DRY_RUN=true npm run setup:github-project
 ## Notes
 
 - Budget currency is selected on the event form and carried through event budget displays.
-- Event and budget data are persisted with PostgreSQL through Prisma.
+- Event and budget data are persisted with MongoDB through Prisma.
 
 ## Next Steps
 
