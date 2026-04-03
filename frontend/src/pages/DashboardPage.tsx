@@ -14,12 +14,24 @@ function ActionCard({ to, title, description }: { to: string; title: string; des
 }
 
 export default function DashboardPage() {
-  const { user } = useSession();
+  const { user, loading } = useSession();
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600">
+        Loading your dashboard...
+      </div>
+    );
+  }
 
   if (!user) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-800">
-        Session missing. Please sign in again.
+        Session missing. Please{" "}
+        <Link to="/signin" className="font-semibold underline hover:text-amber-900">
+          sign in again
+        </Link>
+        .
       </div>
     );
   }
@@ -46,7 +58,7 @@ export default function DashboardPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <ActionCard
-              to="/events"
+              to="/admin-events"
               title="Admin Events"
               description="Manage platform-wide event data and review event operations."
             />
@@ -79,12 +91,17 @@ export default function DashboardPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <ActionCard
-              to="/events"
-              title="Manage Events"
-              description="View and manage events available to your organization."
+              to="/organizations"
+              title="Find Organization"
+              description="Browse organizations and request access, or join instantly with a code."
             />
             <ActionCard
-              to="/budget"
+              to="/my-events"
+              title="Manage Events"
+              description="See events you created and events from organizations you belong to."
+            />
+            <ActionCard
+              to="/budgets"
               title="Manage Budgets"
               description="Administer budget lines and reporting for your event work."
             />

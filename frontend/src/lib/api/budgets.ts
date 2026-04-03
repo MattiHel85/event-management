@@ -1,13 +1,20 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 
 export type BudgetPeriod = "YEARLY" | "QUARTERLY";
+export type BudgetScopeType = "PERSONAL" | "ORG";
 
 export interface BudgetPlan {
   id?: string;
-  period: BudgetPeriod;
+  scopeType: BudgetScopeType;
+  organizationId?: string;
+  organizationName?: string | null;
   year: number;
-  quarter: number;
+  currency: string;
   amount: number;
+  categories?: Array<{
+    name: string;
+    amount: number;
+  }>;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -35,19 +42,33 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return data as T;
 }
 
-export function fetchBudgetPlan(params: { period: BudgetPeriod; year: number; quarter?: number }) {
+export function fetchBudgetPlans(params: { year: number }) {
   const query = new URLSearchParams({
-    period: params.period,
     year: String(params.year),
-    ...(params.period === "QUARTERLY" ? { quarter: String(params.quarter ?? 1) } : {}),
   });
 
-  return request<BudgetPlan>(`/api/budgets/plan?${query.toString()}`);
+  return request<{ plans: BudgetPlan[] }>(`/api/budgets/plans?${query.toString()}`);
 }
 
-export function updateBudgetPlan(input: { period: BudgetPeriod; year: number; quarter?: number; amount: number }) {
-  return request<BudgetPlan>("/api/budgets/plan", {
+export function updateBudgetPlan(input: {
+  scopeType: BudgetScopeType;
+  organizationId?: string;
+  year: number;
+  currency: string;
+  amount: number;
+  categories?: Array<{
+    name: string;
+    amount: number;
+  }>;
+}) {
+  return request<BudgetPlan>("/api/budgets/plans", {
     method: "PUT",
     body: JSON.stringify(input),
+  });
+}
+
+export function deleteBudgetPlan(id: string) {
+  return request<{ success: boolean }>(`/api/budgets/plans/${encodeURIComponent(id)}`, {
+    method: "DELETE",
   });
 }

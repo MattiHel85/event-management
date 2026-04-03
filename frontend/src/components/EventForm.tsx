@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { CURRENCIES, getCurrency } from "../lib/currencies";
 import type { IEvent } from "../lib/models/Event";
 import { useEvents } from "../context/EventsContext";
+import { useSession } from "../context/SessionContext";
 
 interface EventFormProps {
   initial?: Partial<IEvent>;
   eventId?: string;
+  redirectOnCreateToMyEvents?: boolean;
+  onSaved?: (event: IEvent) => void;
 }
 
-export default function EventForm({ initial, eventId }: EventFormProps) {
+export default function EventForm({ initial, eventId, redirectOnCreateToMyEvents = false, onSaved }: EventFormProps) {
   const navigate = useNavigate();
   const { createEvent, updateEvent } = useEvents();
+  const { user } = useSession();
 
   const [form, setForm] = useState({
     title: initial?.title ?? "",
@@ -22,6 +26,9 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
     ticketUrl: initial?.ticketUrl ?? "",
     budget: initial?.budget ?? "",
     currency: initial?.currency ?? "USD",
+    visibility: (initial?.visibility ?? "public") as "public" | "internal",
+    organizationId: initial?.organizationId ?? "",
+    noOrganization: false,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,10 +48,18 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
         ticketUrl: String(form.ticketUrl).trim(),
         budget: form.budget !== "" ? Number(form.budget) : undefined,
         currency: String(form.currency),
+        visibility: form.visibility,
+        noOrganization: form.noOrganization,
+        organizationId: !form.noOrganization && form.organizationId ? form.organizationId : undefined,
       };
 
       if (!payload.title || !payload.description || !payload.date || !payload.location || payload.capacity < 1) {
         setError("Please fill in all required fields.");
+        return;
+      }
+
+      if (payload.visibility === "internal" && !payload.organizationId) {
+        setError("Internal events must belong to an organization.");
         return;
       }
 
@@ -54,12 +69,14 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
           setError("Could not update event.");
           return;
         }
+        onSaved?.(updated);
+        if (onSaved) return;
         navigate(`/events/${updated._id}`);
         return;
       }
 
       const event = await createEvent(payload);
-      navigate(`/events/${event._id}`);
+      navigate(redirectOnCreateToMyEvents ? "/my-events" : `/events/${event._id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save event. Please try again.");
     } finally {
@@ -173,6 +190,69 @@ export default function EventForm({ initial, eventId }: EventFormProps) {
           placeholder="https://example.com/tickets"
         />
       </div>
+      <div>
+        <label className="block text-sm text-slate-600 mb-1.5">Visibility</label>
+        <div className="flex gap-4">
+          {(["public", "internal"] as const).map((v) => (
+            <label key={v} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                value={v}
+                checked={form.visibility === v}
+                disabled={form.noOrganization && v === "internal"}
+                onChange={() => setForm({ ...form, visibility: v, organizationId: "" })}
+              />
+              <span className="text-sm text-slate-700 capitalize">{v}</span>
+              {v === "internal" && (
+                <span className="text-xs text-slate-400">(org members only)</span>
+              )}
+            </label>
+          ))}
+        </div>
+      </div>
+      {!eventId && (
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.noOrganization}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                noOrganization: e.target.checked,
+                visibility: e.target.checked ? "public" : prev.visibility,
+                organizationId: e.target.checked ? "" : prev.organizationId,
+              }))
+            }
+            className="rounded border-slate-300"
+          />
+          <span className="text-sm text-slate-700">This event is not part of any organization</span>
+        </label>
+      )}
+      {!form.noOrganization && (
+        <div>
+          <label className="block text-sm text-slate-600 mb-1.5">Organization</label>
+          {user?.memberships && user.memberships.length > 0 ? (
+            <select
+              value={form.organizationId}
+              onChange={(e) => setForm({ ...form, organizationId: e.target.value })}
+              className={inputClass}
+              required={form.visibility === "internal"}
+            >
+              <option value="">No organization</option>
+              {user.memberships.map((m) =>
+                m.organization ? (
+                  <option key={m.organizationId} value={m.organizationId}>
+                    {m.organization.name}
+                  </option>
+                ) : null
+              )}
+            </select>
+          ) : (
+            <p className="text-sm text-slate-400">You are not a member of any organization.</p>
+          )}
+        </div>
+      )}
       {error && <p className="text-red-400 text-sm">{error}</p>}
       <button
         type="submit"

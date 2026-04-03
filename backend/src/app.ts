@@ -13,9 +13,19 @@ export function createApp() {
   app.use(express.json());
   app.use(cookieParser());
 
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
+    .split(",")
+    .map((o) => o.trim());
+
   app.use(
     cors({
-      origin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`CORS: origin '${origin}' not allowed`));
+        }
+      },
       credentials: true,
     })
   );
@@ -28,6 +38,7 @@ export function createApp() {
   app.use("/api/events", eventRoutes);
   app.use("/api/budgets", budgetRoutes);
   app.use("/api/admin/organizations", organizationRoutes);
+  app.use("/api/organizations", organizationRoutes);
   app.use("/api/feature-requests", featureRequestRoutes);
 
   return app;

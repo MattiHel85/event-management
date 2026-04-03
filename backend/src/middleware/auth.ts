@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { prisma } from "../lib/prisma.js";
+import { toObjectId } from "../lib/objectId.js";
+import { OrganizationMemberModel } from "../models/OrganizationMember.js";
+import { UserModel } from "../models/User.js";
 
 const TOKEN_COOKIE = "session_token";
 
@@ -8,7 +10,6 @@ const ORG_ROLE_RANK: Record<string, number> = {
   OWNER: 4,
   ADMIN: 3,
   MEMBER: 2,
-  VIEWER: 1,
 };
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -43,11 +44,13 @@ export async function requirePlatformAdmin(req: Request, res: Response, next: Ne
     return res.status(401).json({ error: "Not authenticated" });
   }
 
+  const userId = toObjectId(req.auth.userId);
+  if (!userId) {
+    return res.status(401).json({ error: "Invalid session" });
+  }
+
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.auth.userId },
-      select: { role: true },
-    });
+    const user: { role?: string } | null = await UserModel.findById(userId).select("role").lean();
 
     if (user?.role !== "PLATFORM_ADMIN") {
       return res.status(403).json({ error: "Forbidden" });
@@ -59,7 +62,7 @@ export async function requirePlatformAdmin(req: Request, res: Response, next: Ne
   }
 }
 
-export function requireOrgRole(minRole: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER") {
+export function requireOrgRole(minRole: "OWNER" | "ADMIN" | "MEMBER") {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.auth?.userId) {
       return res.status(401).json({ error: "Not authenticated" });
@@ -72,17 +75,26 @@ export function requireOrgRole(minRole: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER")
       return res.status(400).json({ error: "Organization ID is required" });
     }
 
+    const orgObjectId = toObjectId(orgId);
+    const userObjectId = toObjectId(req.auth.userId);
+
+    if (!orgObjectId || !userObjectId) {
+      return res.status(400).json({ error: "Invalid organization ID" });
+    }
+
     try {
-      const membership = await prisma.organizationMember.findFirst({
-        where: { organizationId: orgId, userId: req.auth.userId },
-        select: { role: true },
-      });
+      const membership: { role?: string } | null = await OrganizationMemberModel.findOne({
+        organizationId: orgObjectId,
+        userId: userObjectId,
+      })
+        .select("role")
+        .lean();
 
       if (!membership) {
         return res.status(403).json({ error: "Not a member of this organization" });
       }
 
-      const userRank = ORG_ROLE_RANK[membership.role] ?? 0;
+      const userRank = ORG_ROLE_RANK[membership.role ?? ""] ?? 0;
       const requiredRank = ORG_ROLE_RANK[minRole] ?? 0;
 
       if (userRank < requiredRank) {

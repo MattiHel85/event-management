@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../lib/api/auth";
+import { useSession } from "../context/SessionContext";
 
 export default function SignInPage() {
   const navigate = useNavigate();
+  const { refreshSession } = useSession();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -31,11 +33,14 @@ export default function SignInPage() {
       const data = await signIn({
         email: form.email,
         password: form.password,
+        remember: form.remember,
       });
+
+      await refreshSession();
 
       setStatus("success");
       setMessage(data.message ?? "Sign in successful.");
-      window.setTimeout(() => navigate("/dashboard"), 300);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Could not sign in right now.");

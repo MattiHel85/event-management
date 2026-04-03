@@ -11,6 +11,9 @@ interface EventInput {
   ticketUrl: string;
   budget?: number;
   currency?: string;
+  organizationId?: string;
+  noOrganization?: boolean;
+  visibility?: "public" | "internal";
 }
 
 interface BudgetItemInput {
@@ -18,6 +21,8 @@ interface BudgetItemInput {
   description: string;
   amount: number;
 }
+
+type EventParticipationStatus = "INTERESTED" | "ATTENDING";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
@@ -81,4 +86,28 @@ export async function deleteBudgetItem(eventId: string, itemId: string) {
   await request<{ success: boolean }>(`/api/events/${eventId}/budget/${itemId}`, {
     method: "DELETE",
   });
+}
+
+export function setEventParticipation(eventId: string, status: EventParticipationStatus) {
+  return request<{ status: EventParticipationStatus; attendingCount: number }>(`/api/events/${eventId}/participation`, {
+    method: "POST",
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function clearEventParticipation(eventId: string) {
+  return request<{ success: boolean; attendingCount: number }>(`/api/events/${eventId}/participation`, {
+    method: "DELETE",
+  });
+}
+
+export interface EventAttendee {
+  userId: string;
+  name: string | null;
+  email: string;
+  status: "INTERESTED" | "ATTENDING";
+}
+
+export function fetchEventAttendees(eventId: string) {
+  return request<{ attendees: EventAttendee[] }>(`/api/events/${eventId}/attendees`);
 }

@@ -1,6 +1,6 @@
 # Event Management
 
-A modern event planning dashboard with a Vite + React frontend and an Express + Prisma backend.
+A modern event planning dashboard with a Vite + React frontend and an Express + Mongoose backend.
 
 Create events, set capacity, and manage per-event budgets with multi-currency support.
 
@@ -27,7 +27,7 @@ Create events, set capacity, and manage per-event budgets with multi-currency su
 - Tailwind CSS
 - Recharts
 - Express
-- Prisma ORM
+- Mongoose
 - MongoDB
 
 ## Getting Started
@@ -64,14 +64,7 @@ NODE_ENV="development"
 VITE_API_BASE_URL="http://localhost:4000"
 ```
 
-### 3. Generate Prisma client
-
-```bash
-cd backend
-npm run prisma:generate
-```
-
-### 4. Run development servers
+### 3. Run development servers
 
 In terminal 1:
 
@@ -89,7 +82,7 @@ npm run dev
 
 Open http://localhost:5173
 
-### 5. Build for production
+### 4. Build for production
 
 ```bash
 cd backend && npm run build
@@ -163,7 +156,7 @@ DRY_RUN=true npm run setup:github-project
 ## Notes
 
 - Budget currency is selected on the event form and carried through event budget displays.
-- Event and budget data are persisted with MongoDB through Prisma.
+- Event and budget data are persisted with MongoDB through Mongoose.
 
 ## Next Steps
 

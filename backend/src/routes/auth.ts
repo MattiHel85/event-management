@@ -2,7 +2,10 @@ import { hash, compare } from "bcryptjs";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
-import { prisma } from "../lib/prisma.js";
+import { toObjectId } from "../lib/objectId.js";
+import { OrganizationMemberModel } from "../models/OrganizationMember.js";
+import { OrganizationModel } from "../models/Organization.js";
+import { UserModel } from "../models/User.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
@@ -18,50 +21,100 @@ const signupSchema = z.object({
 const signinSchema = z.object({
   email: z.string().trim().toLowerCase(),
   password: z.string().min(1),
+  remember: z.boolean().optional(),
 });
 
-const userPublicSelect = {
-  id: true,
-  name: true,
-  email: true,
-  role: true,
-  createdAt: true,
-  updatedAt: true,
-  memberships: {
-    select: {
-      id: true,
-      role: true,
-      organizationId: true,
-      organization: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-    },
-  },
-} as const;
+const updateProfileSchema = z.object({
+  name: z.string().trim().max(120).nullable(),
+  email: z.string().trim().toLowerCase(),
+});
 
-function authCookieOptions() {
+function authCookieBaseOptions() {
   const isProduction = process.env.NODE_ENV === "production";
   return {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax" as const,
     path: "/",
-    maxAge: 60 * 60 * 24 * 7 * 1000,
   };
 }
 
-function signSessionToken(userId: string) {
+function authCookieOptions(remember: boolean) {
+  return {
+    ...authCookieBaseOptions(),
+    ...(remember ? { maxAge: 60 * 60 * 24 * 30 * 1000 } : {}),
+  };
+}
+
+function signSessionToken(userId: string, remember: boolean) {
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
     throw new Error("JWT_SECRET is missing");
   }
 
-  return jwt.sign({ userId }, jwtSecret, { expiresIn: "7d" });
+  return jwt.sign({ userId }, jwtSecret, { expiresIn: remember ? "30d" : "12h" });
+}
+
+type SafeUser = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+  memberships: Array<{
+    id: string;
+    role: string;
+    organizationId: string;
+    organization: { id: string; name: string; slug: string } | null;
+  }>;
+};
+
+async function loadSafeUser(userId: string): Promise<SafeUser | null> {
+  const objectId = toObjectId(userId);
+  if (!objectId) return null;
+
+  const user: any = await UserModel.findById(objectId)
+    .select("_id name email role createdAt updatedAt")
+    .lean();
+
+  if (!user) return null;
+
+  const memberships: any[] = await OrganizationMemberModel.find({ userId: objectId })
+    .select("_id role organizationId")
+    .lean();
+
+  const orgIds = memberships.map((membership) => membership.organizationId);
+  const organizations: any[] = await OrganizationModel.find({ _id: { $in: orgIds } })
+    .select("_id name slug")
+    .lean();
+
+  const organizationById = new Map(organizations.map((org) => [String(org._id), org]));
+
+  return {
+    id: String(user._id),
+    name: user.name ?? null,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    memberships: memberships.map((membership) => {
+      const organization = organizationById.get(String(membership.organizationId));
+      return {
+        id: String(membership._id),
+        role: membership.role,
+        organizationId: String(membership.organizationId),
+        organization: organization
+          ? {
+              id: String(organization._id),
+              name: organization.name,
+              slug: organization.slug,
+            }
+          : null,
+      };
+    }),
+  };
 }
 
 router.post("/signup", async (req, res) => {
@@ -82,16 +135,23 @@ router.post("/signup", async (req, res) => {
   try {
     const passwordHash = await hash(password, 10);
 
-    const user = await prisma.user.create({
-      data: { name: name || null, email, passwordHash },
-      select: userPublicSelect,
+    const user: any = await UserModel.create({
+      name: name || null,
+      email,
+      passwordHash,
     });
 
-    return res.status(201).json(user);
-  } catch (error) {
-    const code = typeof error === "object" && error && "code" in error ? (error as { code?: string }).code : null;
+    const safeUser = await loadSafeUser(String(user._id));
 
-    if (code === "P2002") {
+    if (!safeUser) {
+      return res.status(500).json({ error: "Failed to load user profile" });
+    }
+
+    return res.status(201).json(safeUser);
+  } catch (error) {
+    const code = typeof error === "object" && error && "code" in error ? (error as { code?: number }).code : null;
+
+    if (code === 11000) {
       return res.status(409).json({ error: "Email already in use" });
     }
 
@@ -106,10 +166,10 @@ router.post("/signin", async (req, res) => {
     return res.status(400).json({ error: "Invalid request body" });
   }
 
-  const { email, password } = parsed.data;
+  const { email, password, remember = false } = parsed.data;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user: any = await UserModel.findOne({ email }).select("_id passwordHash").lean();
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -121,14 +181,11 @@ router.post("/signin", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    const token = signSessionToken(user.id);
+    const token = signSessionToken(String(user._id), remember);
 
-    res.cookie(TOKEN_COOKIE, token, authCookieOptions());
+    res.cookie(TOKEN_COOKIE, token, authCookieOptions(remember));
 
-    const safeUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: userPublicSelect,
-    });
+    const safeUser = await loadSafeUser(String(user._id));
 
     if (!safeUser) {
       return res.status(500).json({ error: "Failed to load user profile" });
@@ -145,13 +202,10 @@ router.post("/signin", async (req, res) => {
 
 router.get("/me", requireAuth, async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.auth!.userId },
-      select: userPublicSelect,
-    });
+    const user = await loadSafeUser(req.auth!.userId);
 
     if (!user) {
-      res.clearCookie(TOKEN_COOKIE, authCookieOptions());
+      res.clearCookie(TOKEN_COOKIE, authCookieBaseOptions());
       return res.status(401).json({ error: "Session is invalid" });
     }
 
@@ -161,8 +215,46 @@ router.get("/me", requireAuth, async (req, res) => {
   }
 });
 
+router.patch("/me", requireAuth, async (req, res) => {
+  if (!req.auth?.userId) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const parsed = updateProfileSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid profile payload" });
+  }
+
+  const userObjectId = toObjectId(req.auth.userId);
+  if (!userObjectId) {
+    return res.status(401).json({ error: "Invalid session" });
+  }
+
+  try {
+    await UserModel.findByIdAndUpdate(userObjectId, {
+      $set: {
+        name: parsed.data.name,
+        email: parsed.data.email,
+      },
+    });
+
+    const user = await loadSafeUser(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({ user });
+  } catch (error) {
+    const code = typeof error === "object" && error && "code" in error ? (error as { code?: number }).code : null;
+    if (code === 11000) {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+    return res.status(500).json({ error: "Failed to update profile" });
+  }
+});
+
 router.post("/logout", (_req, res) => {
-  res.clearCookie(TOKEN_COOKIE, authCookieOptions());
+  res.clearCookie(TOKEN_COOKIE, authCookieBaseOptions());
   return res.json({ message: "Signed out" });
 });
 

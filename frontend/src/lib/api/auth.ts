@@ -9,11 +9,12 @@ interface SignUpInput {
 interface SignInInput {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 export interface UserMembership {
   id: string;
-  role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
+  role: "OWNER" | "ADMIN" | "MEMBER";
   organizationId: string;
   organization: {
     id: string;
@@ -71,6 +72,13 @@ export function signIn(input: SignInInput) {
 
 export function me() {
   return request<{ user: User }>("/api/auth/me");
+}
+
+export function updateMe(input: { name: string | null; email: string }) {
+  return request<{ user: User }>("/api/auth/me", {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
 }
 
 export function logout() {

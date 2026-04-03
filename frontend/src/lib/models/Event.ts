@@ -9,6 +9,7 @@ export interface IEvent {
   _id?: string;
   createdById?: string;
   organizationId?: string;
+  visibility?: "public" | "internal";
   title: string;
   description: string;
   date: string;
@@ -17,6 +18,8 @@ export interface IEvent {
   ticketUrl: string;
   budget?: number;
   currency?: string;
+  participationStatus?: "INTERESTED" | "ATTENDING" | null;
+  attendingCount?: number;
   budgetItems?: IBudgetItem[];
   budgetId?: string;
   createdAt?: string;

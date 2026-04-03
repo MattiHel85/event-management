@@ -2,10 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { IEvent } from "../lib/models/Event";
 import {
   addBudgetItem as addBudgetItemApi,
+  clearEventParticipation as clearEventParticipationApi,
   createEvent as createEventApi,
   deleteBudgetItem as deleteBudgetItemApi,
   deleteEvent as deleteEventApi,
   fetchEvents,
+  setEventParticipation as setEventParticipationApi,
   updateEvent as updateEventApi,
 } from "../lib/api/events";
 
@@ -18,6 +20,7 @@ interface EventInput {
   ticketUrl: string;
   budget?: number;
   currency?: string;
+  noOrganization?: boolean;
 }
 
 interface BudgetItemInput {
@@ -37,6 +40,7 @@ interface EventsContextValue {
   deleteEvent: (id: string) => Promise<void>;
   addBudgetItem: (eventId: string, item: BudgetItemInput) => Promise<{ id: string; category: string; description: string; amount: number }>;
   deleteBudgetItem: (eventId: string, itemId: string) => Promise<void>;
+  setEventParticipation: (eventId: string, status: "INTERESTED" | "ATTENDING" | null) => Promise<void>;
 }
 
 const EventsContext = createContext<EventsContextValue | null>(null);
@@ -114,6 +118,27 @@ export function EventsProvider({ children }: { children: React.ReactNode }) {
       );
     };
 
+    const setEventParticipation = async (eventId: string, status: "INTERESTED" | "ATTENDING" | null) => {
+      if (status) {
+        const result = await setEventParticipationApi(eventId, status);
+        setEvents((prev) =>
+          prev.map((event) =>
+            event._id === eventId
+              ? { ...event, participationStatus: result.status, attendingCount: result.attendingCount }
+              : event
+          )
+        );
+        return;
+      }
+
+      const result = await clearEventParticipationApi(eventId);
+      setEvents((prev) =>
+        prev.map((event) =>
+          event._id === eventId ? { ...event, participationStatus: null, attendingCount: result.attendingCount } : event
+        )
+      );
+    };
+
     return {
       events,
       loading,
@@ -125,6 +150,7 @@ export function EventsProvider({ children }: { children: React.ReactNode }) {
       deleteEvent,
       addBudgetItem,
       deleteBudgetItem,
+      setEventParticipation,
     };
   }, [events, loading, error, refreshEvents]);
 
