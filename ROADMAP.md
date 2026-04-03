@@ -10,18 +10,16 @@ This roadmap outlines the planned evolution of Event Management.
 - [x] Migrate event and budget APIs incrementally, then remove Next.js API routes
 
 ## Phase 1: Organizations, Membership, And Event Visibility
-- [ ] Add organization model and organization creation flow
-- [ ] Allow inviting and assigning users to an organization
-- [ ] Add membership roles (Owner, Admin, Member, Viewer)
-- [ ] Let each user keep both private and work emails on one account
-- [ ] Keep account identity separate from organization membership
-- [ ] Remove access to the old organization when a user leaves or is removed
-- [ ] Allow the same user account to be invited into a new organization later
-- [ ] Scope all non-public events to users in the same organization only
-- [ ] Allow events to be marked public so they are visible outside the organization
+- [x] Add organization model and organization creation flow
+- [x] Allow inviting and assigning users to an organization
+- [x] Add membership roles (Owner, Admin, Member)
+- [x] Keep account identity separate from organization membership
+- [x] Allow the same user account to be invited into a new organization
+- [x] Scope all non-public events to users in the same organization only
+- [x] Allow events to be marked public so they are visible outside the organization
 
 ## Phase 2: Sharing And Calendar
-- [ ] Add Share Event button on event detail page
+- [x] Add Share Event button on event detail page
 - [x] Support native Web Share API where available
 - [ ] Add social share fallbacks (X, LinkedIn, Facebook, WhatsApp, Email)
 - [x] Add Copy Link fallback
@@ -55,7 +53,7 @@ This roadmap outlines the planned evolution of Event Management.
 ## Phase 6: Guest List And Exports
 - [ ] Build guest list model and UI per event
 - [ ] Track RSVP status and basic guest notes
-- [ ] Export guest lists as TXT
+- [ ] Export guest lists as CSV
 - [ ] Export guest lists as XLSX
 - [ ] Export guest lists as PDF
 
@@ -82,8 +80,8 @@ This roadmap outlines the planned evolution of Event Management.
 
 ## Delivery Order (Recommended)
 1. [x] Architecture split: Node.js/TypeScript backend + React/Vite frontend
-2. [ ] Organization creation + user assignment
-3. [ ] Organization-scoped event visibility + public events
+2. [x] Organization creation + user assignment
+3. [x] Organization-scoped event visibility + public events
 4. [ ] Share Event + social sharing
 5. [ ] Venues + online meeting links
 6. [ ] Google Calendar `.ics` export
