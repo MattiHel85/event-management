@@ -9,14 +9,14 @@ export default function EventsPage() {
 
   if (loading) {
     return (
-      <main className="max-w-5xl mx-auto pt-4 pb-24">
+      <main className="w-4/5 mx-auto pt-4 pb-24">
         <p className="text-slate-500">Loading events...</p>
       </main>
     );
   }
 
   return (
-    <main className="max-w-5xl mx-auto pt-4 pb-24">
+    <main className="w-4/5 mx-auto pt-4 pb-24">
       <div className="flex items-center justify-between mb-10">
         <div>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Browse Events</h1>
