@@ -56,6 +56,12 @@ JWT_SECRET="your-secret"
 CORS_ORIGIN="http://localhost:5173"
 PORT="4000"
 NODE_ENV="development"
+SMTP_HOST="smtp.example.com"
+SMTP_PORT="587"
+SMTP_SECURE="false"
+SMTP_USER="smtp-user"
+SMTP_PASS="smtp-pass"
+FROM_EMAIL="noreply@example.com"
 ```
 
 - frontend/.env
@@ -63,6 +69,22 @@ NODE_ENV="development"
 ```env
 VITE_API_BASE_URL="http://localhost:4000"
 ```
+
+Email settings are optional until you start sending emails. For local testing, tools like MailHog, Mailpit, or Ethereal work well.
+
+Basic backend usage:
+
+```ts
+import { sendEmail } from "./lib/mailer.js";
+
+await sendEmail({
+	to: "user@example.com",
+	subject: "Welcome",
+	text: "Your account is ready.",
+});
+```
+
+The signup endpoint sends a welcome email automatically when SMTP variables are configured.
 
 ### 3. Run development servers
 

@@ -3,6 +3,7 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { toObjectId } from "../lib/objectId.js";
+import { isEmailConfigured, sendEmail } from "../lib/mailer.js";
 import { OrganizationMemberModel } from "../models/OrganizationMember.js";
 import { OrganizationModel } from "../models/Organization.js";
 import { UserModel } from "../models/User.js";
@@ -145,6 +146,18 @@ router.post("/signup", async (req, res) => {
 
     if (!safeUser) {
       return res.status(500).json({ error: "Failed to load user profile" });
+    }
+
+    if (isEmailConfigured()) {
+      try {
+        await sendEmail({
+          to: safeUser.email,
+          subject: "Welcome to Event Management",
+          text: `Hi ${safeUser.name ?? "there"},\n\nWelcome to Event Management. Your account is ready and you can now start planning events.\n\n- Event Management Team`,
+        });
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+      }
     }
 
     return res.status(201).json(safeUser);
